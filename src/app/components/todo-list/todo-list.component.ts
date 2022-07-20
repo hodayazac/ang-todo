@@ -1,5 +1,4 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { Subscription } from 'rxjs';
+import { Component, Input, OnInit } from '@angular/core';
 import { ITodo } from 'src/app/models/todo.interface';
 import { TosoService } from 'src/app/services/toso.service';
 
@@ -8,24 +7,17 @@ import { TosoService } from 'src/app/services/toso.service';
   templateUrl: './todo-list.component.html',
   styleUrls: ['./todo-list.component.scss']
 })
-export class TodoListComponent implements OnInit, OnDestroy {
+export class TodoListComponent implements OnInit {
 
-  public todos: Array<ITodo> = [];
-  private subscription: Subscription = new Subscription()
+  @Input() todos: Array<ITodo> = [];
+
 
   constructor(private todoService: TosoService) { }
 
   ngOnInit(): void {
-    this.subscription.add(
-      this.todoService.getTodos().subscribe(data => {
-        console.log(data)
-        this.todos = data
-      })
-    )
+  
   }
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe()
-  } 
+
   onTodoClick(todo: ITodo, index: number): void {
     this.todoService.setselectedTodo(todo)
     this.todos.forEach(todo => {
