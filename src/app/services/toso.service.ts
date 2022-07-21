@@ -15,6 +15,16 @@ export class TosoService {
   constructor() { }
 
   public getTodos():Observable<Array<ITodo>>{
+    if(!this._todoSubject.value.length){
+      const todosString= localStorage.getItem("todos")
+      if(todosString){
+        const exiistingTodos:ITodo[]=JSON.parse(todosString)
+        exiistingTodos[0].selected=true;
+        this._todoSubject.next(exiistingTodos)
+        this._singleTodoSubject.next(exiistingTodos[0])
+      }
+
+    }
     return this._todoSubject.asObservable()
 
   }
@@ -31,5 +41,6 @@ export class TosoService {
     const exiistingTodo:ITodo[]=this._todoSubject.value 
     exiistingTodo.push(newTodo)
     this._todoSubject.next(exiistingTodo)
+    localStorage.setItem("todos", JSON.stringify(exiistingTodo))
   }
 }
