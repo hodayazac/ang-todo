@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { BehaviorSubject, Observable, Subject } from 'rxjs';
+import { BehaviorSubject, Observable, single, Subject } from 'rxjs';
 import { ITodo } from '../models/todo.interface';
 
 @Injectable({
@@ -15,13 +15,13 @@ export class TosoService {
   constructor() { }
 
   public getTodos():Observable<Array<ITodo>>{
-    if(!this._todoSubject.value.length){
-      const todosString= localStorage.getItem("todos")
-      if(todosString){
-        const exiistingTodos:ITodo[]=JSON.parse(todosString)
-        exiistingTodos[0].selected=true;
-        this._todoSubject.next(exiistingTodos)
-        this._singleTodoSubject.next(exiistingTodos[0])
+    if (!this._todoSubject.value.length) {
+      const todosString = localStorage.getItem('todos');
+      if (todosString) {
+        const existingTodos: Array<ITodo> = JSON.parse(todosString);
+        existingTodos[0].selected = true;
+        this._todoSubject.next(existingTodos);
+        this._singleTodoSubject.next(existingTodos[0]);
       }
 
     }
@@ -37,10 +37,29 @@ export class TosoService {
     
   }
   public addNewTodo(newTodo:ITodo):void{
-    console.log(newTodo)
-    const exiistingTodo:ITodo[]=this._todoSubject.value 
-    exiistingTodo.push(newTodo)
-    this._todoSubject.next(exiistingTodo)
-    localStorage.setItem("todos", JSON.stringify(exiistingTodo))
+    console.log(newTodo);
+    const existingTodos: Array<ITodo> = this._todoSubject.value;
+    existingTodos.push(newTodo);
+    this._todoSubject.next(existingTodos);
+    localStorage.setItem('todos', JSON.stringify(existingTodos));
+  }
+  public onCompleteTodo(todoId:string):void{
+    const existingTodos:ITodo[]=this._todoSubject.value;
+
+    const todoIndex=existingTodos.findIndex(singleTodo=>singleTodo.id = todoId)
+    existingTodos[todoIndex].isCompleted=true;
+    this._todoSubject.next(existingTodos)
+    localStorage.setItem("todos", JSON.stringify(existingTodos))
+
+  }
+ public onTodoAction(todoId: string, action: string): void {
+    const existingTodos: Array<ITodo> = this._todoSubject.value;
+
+    const todoIndex = existingTodos.findIndex(
+      (singleTodo) => singleTodo.id === todoId
+    );
+    existingTodos[todoIndex][action] = true;
+    this._todoSubject.next(existingTodos);
+    localStorage.setItem('todos', JSON.stringify(existingTodos));
   }
 }
